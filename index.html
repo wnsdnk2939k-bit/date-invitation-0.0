@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Dating Simulator 💌</title>
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:-apple-system, sans-serif;
+  background: linear-gradient(135deg,#ffe0ec,#e0f7ff);
+  overflow:hidden;
+}
+
+.card{
+  width:92%;
+  max-width:380px;
+  background:white;
+  padding:20px;
+  border-radius:20px;
+  text-align:center;
+  box-shadow:0 10px 30px rgba(0,0,0,0.15);
+}
+
+.step{display:none;}
+.step.active{display:block;}
+
+button{
+  padding:12px 16px;
+  border:none;
+  border-radius:12px;
+  margin:6px;
+  font-size:16px;
+}
+
+.pink{background:#ff5c8a;color:white;}
+.gray{background:#ddd;}
+
+.option{
+  background:#f5f5f5;
+  padding:12px;
+  margin:8px;
+  border-radius:12px;
+}
+
+.option:active{
+  transform:scale(0.98);
+}
+
+#noBtn{
+  position:relative;
+}
+
+input{
+  width:90%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  font-size:16px;
+}
+
+canvas{
+  border:1px solid #ccc;
+  border-radius:10px;
+  width:100%;
+  height:120px;
+  touch-action:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <!-- STEP 1 -->
+  <div class="step active" id="s1">
+    <h2>💌 Dating Game</h2>
+    <input id="name" placeholder="이름 입력">
+    <button class="pink" onclick="next(2)">START</button>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="s2">
+    <h3>📌 오늘 일정</h3>
+    <p>나랑 데이트 해야됨</p>
+    <button class="pink" onclick="next(3)">확인</button>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="s3">
+    <h3>📍 장소 선택</h3>
+
+    <div class="option" onclick="setPlace('만화카페 🎬')">만화카페 🎬</div>
+ 
+
+    <p id="placeText"></p>
+    <button class="pink" onclick="next(4)">다음</button>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step" id="s4">
+    <h3>🎬 영화 선택</h3>
+
+    <div class="option" onclick="setMovie('어바웃 타임')">어바웃 타임</div>
+    <div class="option" onclick="setMovie('남자가 사랑할 때')">남자가 사랑할 때</div>
+    <div class="option" onclick="setMovie('러브 액츄얼리')">러브 액츄얼리</div>
+    <div class="option" onclick="setMovie('오직 그대만')">오직 그대만</div>
+    <div class="option" onclick="setMovie('같이 고르기 😏')">😏 같이 가서 고르기</div>
+
+    <p id="movieText"></p>
+    <button class="pink" onclick="next(5)">다음</button>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step" id="s5">
+    <h3>💌 마지막 질문</h3>
+    <p>Would you like to go on a date with me?</p>
+
+    <button class="pink" onclick="yes()">YES ❤️</button>
+    <button class="gray" id="noBtn" onmouseover="run()" ontouchstart="run()">NO 🙄</button>
+
+    <p id="noText"></p>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step" id="s6">
+    <h3>✍️ 서명</h3>
+    <canvas id="canvas"></canvas>
+    <br>
+    <button class="pink" onclick="finish()">완료</button>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step" id="s7">
+    <h2>🎉 엔딩</h2>
+    <p id="ending"></p>
+  </div>
+
+</div>
+
+<script>
+
+let place="";
+let movie="";
+let noCount=0;
+
+/* page flow */
+function next(n){
+  document.querySelectorAll(".step").forEach(s=>s.classList.remove("active"));
+  document.getElementById("s"+n).classList.add("active");
+}
+
+/* select */
+function setPlace(p){
+  place=p;
+  document.getElementById("placeText").innerText="✔ "+p;
+}
+
+function setMovie(m){
+  movie=m;
+  document.getElementById("movieText").innerText="✔ "+m;
+}
+
+/* NO runaway (mobile + desktop) */
+function run(){
+  let b=document.getElementById("noBtn");
+  b.style.position="absolute";
+  b.style.left=Math.random()*60+"%";
+  b.style.top=Math.random()*40+"%";
+
+  noCount++;
+
+  if(noCount===1){
+    document.getElementById("noText").innerText="🤨 다시 생각해";
+  }
+  else if(noCount===2){
+    document.getElementById("noText").innerText="😏 도망 못 감";
+  }
+  else if(noCount===3){
+    document.getElementById("noText").innerText="🥺 그냥 확정ㅋ";
+  }
+  else{
+    document.getElementById("ending").innerText=
+      "😈 시스템 메시지\n\n거절 기능은 2026년에 삭제되었습니다.";
+    next(7);
+  }
+}
+
+/* YES */
+function yes(){
+  let name=document.getElementById("name").value || "너";
+
+  document.getElementById("ending").innerText=
+    "💖 확정 완료\n\n"+
+    name+" 참여 확인.\n\n"+
+    "📍 "+place+"\n🎬 "+movie+"\n\n"+
+    "거절은 거절할게 😏";
+
+  next(7);
+}
+
+/* canvas (mobile touch) */
+let canvas=document.getElementById("canvas");
+let ctx=canvas.getContext("2d");
+
+canvas.width=canvas.offsetWidth;
+canvas.height=120;
+
+let drawing=false;
+
+canvas.addEventListener("mousedown",start);
+canvas.addEventListener("mousemove",draw);
+canvas.addEventListener("mouseup",()=>drawing=false);
+
+canvas.addEventListener("touchstart",e=>{
+  drawing=true;
+  let t=e.touches[0];
+  let r=canvas.getBoundingClientRect();
+  ctx.beginPath();
+  ctx.moveTo(t.clientX-r.left,t.clientY-r.top);
+});
+
+canvas.addEventListener("touchmove",e=>{
+  if(!drawing) return;
+  let t=e.touches[0];
+  let r=canvas.getBoundingClientRect();
+  ctx.lineTo(t.clientX-r.left,t.clientY-r.top);
+  ctx.stroke();
+});
+
+canvas.addEventListener("touchend",()=>drawing=false);
+
+function start(e){
+  drawing=true;
+  ctx.beginPath();
+  ctx.moveTo(e.offsetX,e.offsetY);
+}
+
+function draw(e){
+  if(!drawing) return;
+  ctx.lineTo(e.offsetX,e.offsetY);
+  ctx.stroke();
+}
+
+function finish(){
+  next(6);
+}
+
+</script>
+
+</body>
+</html>
